@@ -31,8 +31,8 @@ insert into products(name, price) values ('potato', 13);
 
 
 CREATE TABLE infopurchase (
-	idusers int,
-	idproducts int
+	user_id int,
+	product_id int
 );
 
 
