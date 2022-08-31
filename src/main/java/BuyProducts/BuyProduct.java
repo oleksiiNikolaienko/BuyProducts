@@ -8,37 +8,41 @@ public class BuyProduct {
     private static final String DB_PASSWORD = "postgres";
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/java_db";
 
+    private String textBlocks() {
+        return """
+        1. Display list of all users
+        2. Display list of all products
+        3. User should be able to buy product
+        4. Display list of user products by user id
+        5. Display list of users that bought product by product id
+        6. Exit""";
+    }
+
     public static void main(String[] args) throws Exception{
         Scanner scanner = new Scanner(System.in);
+        BuyProduct buyProduct = new BuyProduct();
         Database database = new Database();
         Map<String, List<Product>> map = new HashMap<String, List<Product>>();
         UserResultSet userResultSet = new UserResultSet();
         ProductResultSet productResultSet = new ProductResultSet();
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_PASSWORD, DB_USERNAME);Statement statement = connection.createStatement();){
             while (true) {
-                System.out.println("1. Display list of all users");
-                System.out.println("2. Display list of all products");
-                System.out.println("3. User should be able to buy product");
-                System.out.println("4. Display list of user products by user id");
-                System.out.println("5. Display list of users that bought product by product id");
-                System.out.println("6. Exit");
+                System.out.println(buyProduct.textBlocks());
                 int command = scanner.nextInt();
                 switch (command) {
-                    case 1: {
+                    case 1 -> {
                         List<User> array = userResultSet.UsersInfo(statement.executeQuery(database.selectAllUsers()));
                         for (User arrays: array) {
                             System.out.println(arrays.getId() + " " + arrays.getFirstName() + " " + arrays.getLastName() + " " + arrays.getMoney());
                         }
-                        break;
                     }
-                    case 2: {
+                    case 2 -> {
                         List<Product> array = productResultSet.ProductsInfo(statement.executeQuery(database.selectAllProducts()));
                         for (Product arrays: array) {
                             System.out.println(arrays.getId() + " " + arrays.getName() + " " + arrays.getPrice());
                         }
-                        break;
                     }
-                    case 3: {
+                    case 3 -> {
                         System.out.println("Enter user id:");
                         int userId = scanner.nextInt();
                         System.out.println("Enter product id:");
@@ -73,9 +77,8 @@ public class BuyProduct {
                                 });
                             }
                         }
-                        break;
                     }
-                    case 4: {
+                    case 4 -> {
                         System.out.println("Enter user id:");
                         int userId = scanner.nextInt();
                         PreparedStatement preparedStatement = connection.prepareStatement(database.productJoinInfopurchase());
@@ -86,9 +89,8 @@ public class BuyProduct {
                                 System.out.println(resultSet.getString("name") + " - " + resultSet.getInt("count") + " pcs");
                             }
                         }
-                        break;
                     }
-                    case 5: {
+                    case 5 -> {
                         System.out.println("Enter product id:");
                         int productId = scanner.nextInt();
                         PreparedStatement preparedStatement = connection.prepareStatement(database.userJoinInfopurchase());
@@ -99,16 +101,13 @@ public class BuyProduct {
                                 System.out.println(resultSet.getString("Firstname") + " " + resultSet.getString("Lastname"));
                             }
                         }
-                        break;
                     }
-                    case 6: {
+                    case 6 -> {
                         //Collection output to see how it works
                         map.forEach((k, v) -> System.out.println((k + ":" + v.toString())));
                         System.exit(0);
-                        break;
                     }
-                    default:
-                        System.err.println("The command is not find");
+                    default -> System.err.println("The command is not find");
                 }
 
             }
