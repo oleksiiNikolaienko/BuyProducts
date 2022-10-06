@@ -4,7 +4,7 @@ import jdbc.*;
 
 import java.util.*;
 
-public class LibraryServiceImpl implements LibraryService{
+public class PurсhaseServiceImp implements PurсhaseService {
 
     private UserDao userDao = new UserDaoJdbcImp();
     private ProductDao productDao = new ProductDaoJdbcImp();

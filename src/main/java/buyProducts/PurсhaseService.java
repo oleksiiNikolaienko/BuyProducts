@@ -1,6 +1,6 @@
 package buyProducts;
 
-public interface LibraryService {
+public interface PurсhaseService {
     void displayListAllUsers();
     void displayListAllProducts();
     void userBuyProduct();
