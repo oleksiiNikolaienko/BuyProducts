@@ -1,4 +1,4 @@
-package BuyProducts;
+package buyProducts;
 
 import java.sql.*;
 

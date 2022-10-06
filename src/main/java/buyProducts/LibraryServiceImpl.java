@@ -1,12 +1,16 @@
-package BuyProducts;
+package buyProducts;
 
-import JDBC.InfoPurchaseDaoJdbcImp;
-import JDBC.ProductDaoJdbcImp;
-import JDBC.UserDaoJdbcImp;
+import jdbc.*;
+
 import java.util.*;
 
 public class LibraryServiceImpl implements LibraryService{
-    private static final String TEXT_BLOCKS = """
+
+    private UserDao userDao = new UserDaoJdbcImp();
+    private ProductDao productDao = new ProductDaoJdbcImp();
+    private InfoPurchaseDao infoPurchaseDao = new InfoPurchaseDaoJdbcImp();
+
+    private static final String MAIN_MENU_TEXT = """
                 1. Display list of all users
                 2. Display list of all products
                 3. User should be able to buy product
@@ -14,39 +18,41 @@ public class LibraryServiceImpl implements LibraryService{
                 5. Display list of users that bought product by product id
                 6. Exit""";
 
-
     @Override
-    public void chooseOne() {
-        List<User> array = new UserDaoJdbcImp().findAllUsers();
+    public void displayListAllUsers() {
+        List<User> array = userDao.findAllUsers();
         for (User arrays : array) {
             System.out.println(arrays.getId() + " " + arrays.getFirstName() + " " + arrays.getLastName() + " " + arrays.getMoney());
         }
     }
 
     @Override
-    public void chooseTwo() {
-        List<Product> array = new ProductDaoJdbcImp().findAllProducts();
+    public void displayListAllProducts() {
+        List<Product> array = productDao.findAllProducts();
         for (Product arrays : array) {
             System.out.println(arrays.getId() + " " + arrays.getName() + " " + arrays.getPrice());
         }
     }
 
     @Override
-    public void chooseThree() {
+    public void userBuyProduct() {
         Map<String, List<Product>> map = new HashMap<String, List<Product>>();
         User user = new UserDaoJdbcImp().findUserById();
         Product product = new ProductDaoJdbcImp().findProductById();
-        if (user.getMoney() < product.getPrice()) {
+        var userGetId = user.getId();
+        var getUserMoney = user.getMoney();
+        var getProductPrice = product.getPrice();
+        if (getUserMoney < getProductPrice) {
             System.out.println("The user does not have enough funds");
         } else {
             System.out.println("You have successfully purchased the product");
-            var decrement = user.getMoney() - product.getPrice();
-            new UserDaoJdbcImp().updateUserMoney(decrement, user.getId());
-            new InfoPurchaseDaoJdbcImp().insert(user.getId(), product.getId());
-            String nameLastname = user.getFirstName() + " " + user.getLastName();
+            var decrement = getUserMoney - getProductPrice;
+            userDao.updateUserMoney(decrement, userGetId);
+            infoPurchaseDao.insertUserIdAndProductIdWhichUserBought(userGetId, product.getId());
+            String fullName = user.getFirstName() + " " + user.getLastName();
             String nameProduct = product.getName();
             Product pr = new Product(nameProduct);
-            map.compute(nameLastname, (key, value) -> {
+            map.compute(fullName, (key, value) -> {
                 value = value != null ? value : new ArrayList<>();
                 value.add(pr);
                 return value;
@@ -55,32 +61,32 @@ public class LibraryServiceImpl implements LibraryService{
     }
 
     @Override
-    public void chooseFour() {
-        new UserDaoJdbcImp().listOfUserProductsByUserId();
+    public void displayListUserProductByUserId() {
+        userDao.listOfUserProductsByUserId();
     }
 
     @Override
-    public void chooseFive() {
+    public void displayListUsersThatBoughtProductByProductId() {
         new ProductDaoJdbcImp().listOfUsersThatBoughtProductByProductId();
     }
 
     @Override
-    public void chooseSix() {
+    public void exitProgram() {
         System.exit(0);
     }
 
-    public void ResultCommand() {
+    public void executeWhatUserSelectedInMenu() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println(TEXT_BLOCKS);
+            System.out.println(MAIN_MENU_TEXT);
             int command = scanner.nextInt();
             switch (command) {
-                case 1 -> new LibraryServiceImpl().chooseOne();
-                case 2 -> new LibraryServiceImpl().chooseTwo();
-                case 3 -> new LibraryServiceImpl().chooseThree();
-                case 4 -> new LibraryServiceImpl().chooseFour();
-                case 5 -> new LibraryServiceImpl().chooseFive();
-                case 6 -> new LibraryServiceImpl().chooseSix();
+                case 1 -> displayListAllUsers();
+                case 2 -> displayListAllProducts();
+                case 3 -> userBuyProduct();
+                case 4 -> displayListUserProductByUserId();
+                case 5 -> displayListUsersThatBoughtProductByProductId();
+                case 6 -> exitProgram();
                 default -> System.err.println("The command is not find");
             }
         }

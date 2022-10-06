@@ -1,4 +1,4 @@
-package JDBC;
+package jdbc;
 
 import java.util.List;
 public interface UserDao<User> {

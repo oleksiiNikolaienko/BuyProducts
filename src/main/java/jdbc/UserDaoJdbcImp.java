@@ -1,7 +1,7 @@
-package JDBC;
+package jdbc;
 
-import BuyProducts.ConnectToDB;
-import BuyProducts.User;
+import buyProducts.ConnectToDB;
+import buyProducts.User;
 import java.sql.*;
 import java.util.*;
 

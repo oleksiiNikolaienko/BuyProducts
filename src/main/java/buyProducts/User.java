@@ -1,4 +1,4 @@
-package BuyProducts;
+package buyProducts;
 
 public class User {
     private int id;

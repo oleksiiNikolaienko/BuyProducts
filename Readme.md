@@ -1,4 +1,4 @@
-# BuyProducts
+# buyProducts
 System from the start has 3 products that can be sold. Each product contains:
 1. Id
 2. Name
