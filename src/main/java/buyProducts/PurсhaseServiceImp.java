@@ -9,6 +9,10 @@ public class PurсhaseServiceImp implements PurсhaseService {
     private UserDao userDao = new UserDaoJdbcImp();
     private ProductDao productDao = new ProductDaoJdbcImp();
     private InfoPurchaseDao infoPurchaseDao = new InfoPurchaseDaoJdbcImp();
+    private User user;
+    private Product product;
+
+
 
     private static final String MAIN_MENU_TEXT = """
                 1. Display list of all users
@@ -36,27 +40,18 @@ public class PurсhaseServiceImp implements PurсhaseService {
 
     @Override
     public void userBuyProduct() {
-        Map<String, List<Product>> map = new HashMap<String, List<Product>>();
-        User user = new UserDaoJdbcImp().findUserById();
-        Product product = new ProductDaoJdbcImp().findProductById();
-        var userGetId = user.getId();
-        var getUserMoney = user.getMoney();
+        user = (User) userDao.findUserById();
+        product = (Product) productDao.findProductById();
+        var userId = user.getId();
+        var userMoney = user.getMoney();
         var getProductPrice = product.getPrice();
-        if (getUserMoney < getProductPrice) {
+        if (userMoney < getProductPrice) {
             System.out.println("The user does not have enough funds");
         } else {
             System.out.println("You have successfully purchased the product");
-            var decrement = getUserMoney - getProductPrice;
-            userDao.updateUserMoney(decrement, userGetId);
-            infoPurchaseDao.insertUserIdAndProductIdWhichUserBought(userGetId, product.getId());
-            String fullName = user.getFirstName() + " " + user.getLastName();
-            String nameProduct = product.getName();
-            Product pr = new Product(nameProduct);
-            map.compute(fullName, (key, value) -> {
-                value = value != null ? value : new ArrayList<>();
-                value.add(pr);
-                return value;
-            });
+            var decrement = userMoney - getProductPrice;
+            userDao.updateUserMoney(decrement, userId);
+            infoPurchaseDao.insertUserIdAndProductIdWhichUserBought(userId, product.getId());
         }
     }
 
