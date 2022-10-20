@@ -3,17 +3,14 @@ package buyProducts;
 import jdbc.*;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class PurсhaseServiceImp implements PurсhaseService {
 
     private UserDao userDao = new UserDaoJdbcImp();
     private ProductDao productDao = new ProductDaoJdbcImp();
     private InfoPurchaseDao infoPurchaseDao = new InfoPurchaseDaoJdbcImp();
-    private User user;
-    private Product product;
-
-
-
+    private static final Scanner scanner = new Scanner(System.in);
     private static final String MAIN_MENU_TEXT = """
                 1. Display list of all users
                 2. Display list of all products
@@ -25,63 +22,61 @@ public class PurсhaseServiceImp implements PurсhaseService {
     @Override
     public void displayListAllUsers() {
         List<User> array = userDao.findAllUsers();
-        for (User arrays : array) {
-            System.out.println(arrays.getId() + " " + arrays.getFirstName() + " " + arrays.getLastName() + " " + arrays.getMoney());
-        }
+        Stream stream = array.stream();
+        stream.forEach(x -> System.out.println(x));
+        stream.close();
     }
 
     @Override
     public void displayListAllProducts() {
         List<Product> array = productDao.findAllProducts();
-        for (Product arrays : array) {
-            System.out.println(arrays.getId() + " " + arrays.getName() + " " + arrays.getPrice());
-        }
+        Stream stream = array.stream();
+        stream.forEach(x -> System.out.println(x));
+        stream.close();
     }
 
     @Override
     public void userBuyProduct() {
-        user = (User) userDao.findUserById();
-        product = (Product) productDao.findProductById();
+        System.out.println("Enter user id:");
+        User user = userDao.findUserById(scanner.nextInt());
+        System.out.println("Enter product id:");
+        Product product = productDao.findProductById(scanner.nextInt());
         var userId = user.getId();
         var userMoney = user.getMoney();
-        var getProductPrice = product.getPrice();
-        if (userMoney < getProductPrice) {
+        var productPrice = product.getPrice();
+        if (userMoney < productPrice) {
             System.out.println("The user does not have enough funds");
         } else {
-            System.out.println("You have successfully purchased the product");
-            var decrement = userMoney - getProductPrice;
+            var decrement = userMoney - productPrice;
             userDao.updateUserMoney(decrement, userId);
             infoPurchaseDao.insertUserIdAndProductIdWhichUserBought(userId, product.getId());
+            System.out.println("You have successfully purchased the product");
         }
     }
 
     @Override
     public void displayListUserProductByUserId() {
-        userDao.listOfUserProductsByUserId();
+        System.out.println("Enter user id:");
+        userDao.listOfUserProductsByUserId(scanner.nextInt());
     }
 
     @Override
     public void displayListUsersThatBoughtProductByProductId() {
-        new ProductDaoJdbcImp().listOfUsersThatBoughtProductByProductId();
+        System.out.println("Enter product id:");
+        productDao.listOfUsersThatBoughtProductByProductId(scanner.nextInt());
     }
 
-    @Override
-    public void exitProgram() {
-        System.exit(0);
-    }
 
     public void executeWhatUserSelectedInMenu() {
-        Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println(MAIN_MENU_TEXT);
-            int command = scanner.nextInt();
-            switch (command) {
+            switch (scanner.nextInt()) {
                 case 1 -> displayListAllUsers();
                 case 2 -> displayListAllProducts();
                 case 3 -> userBuyProduct();
                 case 4 -> displayListUserProductByUserId();
                 case 5 -> displayListUsersThatBoughtProductByProductId();
-                case 6 -> exitProgram();
+                case 6 -> System.exit(0);
                 default -> System.err.println("The command is not find");
             }
         }

@@ -5,12 +5,12 @@ import buyProducts.User;
 import java.sql.*;
 import java.util.*;
 
-public class UserDaoJdbcImp implements UserDao<User>{
+public class UserDaoJdbcImp implements UserDao{
 
     @Override
     public List<User> findAllUsers() {
         List<User> array = new ArrayList<>();
-        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement(SQLUser.FIND_ALL_USERS.QUERY)) {
+        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement("select * from users")) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 User user = new User();
@@ -27,13 +27,10 @@ public class UserDaoJdbcImp implements UserDao<User>{
     }
 
     @Override
-    public User findUserById() {
+    public User findUserById(int userInfoById) {
         User user = new User();
-        Scanner scanner = new Scanner(System.in);
-        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement(SQLUser.SELECT_USER_ID.QUERY)) {
-            System.out.println("Enter user id:");
-            var userId = scanner.nextInt();
-            preparedStatement.setInt(1, userId);
+        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement("select * from users where id = ?")) {
+            preparedStatement.setInt(1, userInfoById);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 user.setId(resultSet.getInt("id"));
@@ -49,7 +46,7 @@ public class UserDaoJdbcImp implements UserDao<User>{
 
     @Override
     public void updateUserMoney(int userMoney, int userid) {
-        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement(SQLUser.UPDATE_USER_MONEY.QUERY)) {
+        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement("update users set money = ? where id = ?")) {
             preparedStatement.setInt(1, userMoney);
             preparedStatement.setInt(2, userid);
             preparedStatement.executeUpdate();
@@ -59,12 +56,10 @@ public class UserDaoJdbcImp implements UserDao<User>{
     }
 
     @Override
-    public void listOfUserProductsByUserId() {
-        Scanner scanner = new Scanner(System.in);
-        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement(SQLUser.JOIN_USER_AND_INFOPURCHASE.QUERY)) {
-            System.out.println("Enter user id:");
-            var userId = scanner.nextInt();
-            preparedStatement.setInt(1,userId);
+    public void listOfUserProductsByUserId(int userid) {
+        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement("select products.name, count(infopurchase.product_id) AS count from products" +
+                " join infopurchase on infopurchase.product_id = products.id where infopurchase.user_id = ? GROUP BY products.name")) {
+            preparedStatement.setInt(1,userid);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 if (resultSet.getString("name") != null) {
@@ -76,17 +71,6 @@ public class UserDaoJdbcImp implements UserDao<User>{
         }
     }
 
-    enum SQLUser {
-        FIND_ALL_USERS("select * from users"),
-        SELECT_USER_ID("select * from users where id = ?"),
-        UPDATE_USER_MONEY("update users set money = ? where id = ?"),
-        JOIN_USER_AND_INFOPURCHASE("select products.name, count(infopurchase.product_id) AS count from products" +
-                " join infopurchase on infopurchase.product_id = products.id where infopurchase.user_id = ? GROUP BY products.name");
 
-        String QUERY;
-        SQLUser(String QUERY) {
-            this.QUERY = QUERY;
-        }
-    }
 
 }

@@ -3,18 +3,6 @@ package buyProducts;
 public class Product {
     private int id;
 
-    public Product(int id, String name, int price) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-    }
-    public Product(String name) {
-        this.name = name;
-    }
-    public Product() {
-
-    }
-
     private String name;
 
     public void setId(int id) {
@@ -46,7 +34,9 @@ public class Product {
     @Override
     public String toString() {
         return "Product{" +
-                "name='" + name + '\'' +
+                "id = " + id +
+                ", name = '" + name + '\'' +
+                ", price = " + price +
                 '}';
     }
 }

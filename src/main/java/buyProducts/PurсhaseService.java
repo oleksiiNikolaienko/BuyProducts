@@ -6,5 +6,4 @@ public interface PurсhaseService {
     void userBuyProduct();
     void displayListUserProductByUserId();
     void displayListUsersThatBoughtProductByProductId();
-    void exitProgram();
 }

@@ -34,6 +34,16 @@ public class User {
         return firstName;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id = " + id +
+                ", firstName = '" + firstName + '\'' +
+                ", lastName = '" + lastName + '\'' +
+                ", money = " + money +
+                '}';
+    }
+
     public String getLastName() {
         return lastName;
     }

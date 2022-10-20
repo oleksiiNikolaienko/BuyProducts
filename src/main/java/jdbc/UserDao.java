@@ -1,9 +1,10 @@
 package jdbc;
 
+import buyProducts.User;
 import java.util.List;
-public interface UserDao<User> {
+public interface UserDao {
     List<User> findAllUsers();
-    User findUserById();
+    User findUserById(int userInfoById);
     void updateUserMoney(int userMoney, int userid);
-    void listOfUserProductsByUserId();
+    void listOfUserProductsByUserId(int userid);
 }

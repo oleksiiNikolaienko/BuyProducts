@@ -5,11 +5,11 @@ import buyProducts.Product;
 import java.sql.*;
 import java.util.*;
 
-public class ProductDaoJdbcImp implements ProductDao<Product>{
+public class ProductDaoJdbcImp implements ProductDao{
     @Override
     public List<Product> findAllProducts() {
         List<Product> array = new ArrayList<>();
-        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement(ProductDaoJdbcImp.SQLProduct.FIND_ALL_PRODUCTS.QUERY)) {
+        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement("select * from products")) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 Product product = new Product();
@@ -24,13 +24,10 @@ public class ProductDaoJdbcImp implements ProductDao<Product>{
         return array;
     }
     @Override
-    public Product findProductById() {
+    public Product findProductById(int productInfoById) {
         Product product = new Product();
-        Scanner scanner = new Scanner(System.in);
-        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement(ProductDaoJdbcImp.SQLProduct.SELECT_ID_PRODUCT.QUERY)) {
-            System.out.println("Enter product id:");
-            var productId = scanner.nextInt();
-            preparedStatement.setInt(1, productId);
+        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement("select * from products where id = ?")) {
+            preparedStatement.setInt(1, productInfoById);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 product.setId(resultSet.getInt("id"));
@@ -44,11 +41,10 @@ public class ProductDaoJdbcImp implements ProductDao<Product>{
     }
 
     @Override
-    public void listOfUsersThatBoughtProductByProductId() {
-        Scanner scanner = new Scanner(System.in);
-        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement(ProductDaoJdbcImp.SQLProduct.JOIN_PRODUCT_AND_INFOPURCHASE.QUERY)) {
-            System.out.println("Enter product id:");
-            var productId = scanner.nextInt();
+    public void listOfUsersThatBoughtProductByProductId(int productId) {
+
+        try (PreparedStatement preparedStatement = new ConnectToDB().getConnection().prepareStatement("select users.firstname, users.lastname" +
+                " from users join infopurchase on infopurchase.user_id = users.id where infopurchase.product_id = ? GROUP BY users.firstname, users.lastname")) {
             preparedStatement.setInt(1,productId);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -58,19 +54,6 @@ public class ProductDaoJdbcImp implements ProductDao<Product>{
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    enum SQLProduct {
-        FIND_ALL_PRODUCTS("select * from products"),
-        SELECT_ID_PRODUCT("select * from products where id = ?"),
-        JOIN_PRODUCT_AND_INFOPURCHASE("select users.firstname, users.lastname from users join infopurchase on infopurchase.user_id = users.id" +
-                " where infopurchase.product_id = ? GROUP BY users.firstname, users.lastname");
-
-        String QUERY;
-
-        SQLProduct(String QUERY) {
-            this.QUERY = QUERY;
         }
     }
 }
