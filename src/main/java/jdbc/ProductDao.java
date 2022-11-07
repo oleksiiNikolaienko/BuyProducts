@@ -1,9 +1,13 @@
 package jdbc;
 
-import buyProducts.Product;
+import entity.Product;
+
 import java.util.List;
-public interface ProductDao{
+
+public interface ProductDao {
     List<Product> findAllProducts();
+
     Product findProductById(int productInfoById);
-    void listOfUsersThatBoughtProductByProductId(int productId);
+
+    List<String> listOfUsersThatBoughtProductByProductId(int productId);
 }
