@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class BuyProductApp {
     private static final Scanner scanner = new Scanner(System.in);
-    private static final PurсhaseService purchaseService = new PurсhaseService();
+    private static final PurchaseService purchaseService = new PurchaseService();
     private static final String HEADER = """
             Welcome to our store!
             """;

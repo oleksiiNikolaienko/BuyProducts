@@ -9,7 +9,7 @@ import jdbc.*;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class PurсhaseService {
+public class PurchaseService {
 
     private static final Scanner scanner = new Scanner(System.in);
     private final UserDao userDao = new UserDaoJdbcImp();

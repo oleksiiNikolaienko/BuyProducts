@@ -51,8 +51,8 @@ public class ProductDaoJdbcImp implements ProductDao {
     public List<String> listOfUsersThatBoughtProductByProductId(int productId) {
         List<String> array = new ArrayList<>();
         try (var connection = ConnectToDB.getConnection();
-             var preparedStatement = connection.prepareStatement("select users.firstname, users.lastname" +
-                     " from users join infopurchase on infopurchase.user_id = users.id where infopurchase.product_id = ? GROUP BY users.firstname, users.lastname")) {
+             var preparedStatement = connection.prepareStatement("select Distinct (users.firstname), users.lastname" +
+                     " from users join infopurchase on infopurchase.user_id = users.id where infopurchase.product_id = ?")) {
             preparedStatement.setInt(1, productId);
             var resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
